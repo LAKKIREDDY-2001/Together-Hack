@@ -1,0 +1,48 @@
+/* stylelint-disable at-rule-no-unknown */
+/* stylelint-disable declaration-no-important */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --glass-bg: 0 0% 100% / 0.1;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-fg: 210 40% 98%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --glass-bg: 0 0% 0% / 0.2;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-fg: 222.2 84% 4.9%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
+
+@layer components {
+  .glassmorphism {
+    @apply bg-glass/80 backdrop-blur-xl border border-glass/50 dark:bg-glassDark/80 dark:border-glassDark/50 shadow-glass;
+  }
+
+  .glass-card {
+    @apply glassmorphism rounded-3xl p-8 transition-all duration-500 hover:shadow-3d;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-2xl px-6 py-3 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-fg hover:bg-primary/90 h-12 gap-2 shadow-lg shadow-primary/10;
+  }
+}
+/* stylelint-enable */
+
