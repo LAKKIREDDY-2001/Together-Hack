@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, enum: ['employee', 'manager'], default: 'employee' },
   department: String,
   targetJob: String,
-  targetSkill: String,
+  targetSkills: [String],
   createdAt: { type: Date, default: Date.now }
 });
 

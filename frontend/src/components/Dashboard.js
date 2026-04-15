@@ -13,6 +13,7 @@ import { createAIRoadmap } from '../utils/aiRoadmap';
 import RoadmapCoachModal from './RoadmapCoachModal';
 import { skillsApi } from '../utils/api';
 import { buildJobTracks, filterCredentialsForTrack, filterSkillsForTrack, getTrackProgress } from '../utils/jobTracks';
+import { analyzeJobDescription, updateUserWithAnalysis } from '../utils/jobAnalyzer';
 
 const Dashboard = () => {
   const { skills, credentials, loading } = useDashboardData();
@@ -26,9 +27,37 @@ const Dashboard = () => {
   const [localSkills, setLocalSkills] = useState([]);
   const [deletingSkillId, setDeletingSkillId] = useState(null);
   const [activeTrackId, setActiveTrackId] = useState(null);
+  const [jobDescription, setJobDescription] = useState('');
+  const [analysis, setAnalysis] = useState(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
   const fallbackRecommendations = getRoleRecommendations(currentUser);
   const jobTracks = buildJobTracks(currentUser, fallbackRecommendations);
+
+  const handleAnalyzeJob = async () => {
+    if (!jobDescription.trim()) return;
+    setAnalyzing(true);
+    try {
+      const result = analyzeJobDescription(jobDescription);
+      setAnalysis(result);
+      toast.success(`AI analyzed ${result.skillCount} skills!`);
+    } catch (error) {
+      toast.error('Analysis failed');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleUpdateRoadmap = () => {
+    if (!analysis) return;
+    const updatedUser = updateUserWithAnalysis(analysis);
+    if (updatedUser) {
+      toast.success('Roadmap updated! 🎯');
+      window.location.reload();
+    } else {
+      toast.error('Could not update user data');
+    }
+  };
   const activeTrack = jobTracks.find((track) => track.id === activeTrackId) || jobTracks[0];
   const recommendationProgress = activeTrack
     ? getTrackProgress(localSkills, activeTrack)
@@ -211,6 +240,78 @@ const Dashboard = () => {
         {/* Tab Content */}
         {activeTab === 'skills' && (
           <div className="glass-card p-6 sm:p-8 rounded-2xl sm:rounded-3xl">
+            {/* Job Analyzer */}
+            <div className="mb-12 rounded-3xl border border-primary/30 bg-gradient-to-r from-primary/10 via-white/60 to-primary/10 p-8">
+              <div className="flex flex-col lg:flex-row lg:items-end gap-6">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                    <Sparkles className="h-6 w-6 text-primary" />
+                    AI Job Analyzer
+                  </h3>
+                  <p className="text-foreground/70 mb-4">Paste a job description and AI will analyze required skills & build your personal roadmap</p>
+                  <textarea
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder="Paste job description here... (Senior React Developer required React 18+, Node.js, TypeScript, AWS..."
+                    className="w-full h-32 p-4 rounded-2xl border border-glass/50 bg-glass/50 backdrop-blur-sm focus:ring-2 focus:ring-primary focus:border-transparent resize-vertical text-sm"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleAnalyzeJob}
+                    disabled={!jobDescription.trim() || analyzing}
+                    className="btn-primary px-6 py-3 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {analyzing ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 border-b-2 border-white rounded-full" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4" />
+                        Analyze Job
+                      </>
+                    )}
+                  </button>
+                  {analysis && (
+                    <button
+                      onClick={handleUpdateRoadmap}
+                      className="glass-card px-6 py-3 font-medium hover:shadow-lg transition-all flex items-center gap-2"
+                    >
+                      Update Roadmap
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              {analysis && (
+                <div className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-sky-500/10 border border-emerald-400/30">
+                  <h4 className="font-bold text-lg mb-3">Analysis Results</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground/80 mb-1 block">Target Job</label>
+                      <div className="font-bold text-xl bg-white/80 px-4 py-2 rounded-xl dark:bg-slate-900/80">
+                        {analysis.targetJob}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground/80 mb-1 block">Detected Skills ({analysis.skillCount})</label>
+                      <div className="flex flex-wrap gap-2">
+                        {analysis.targetSkills.map((skill, index) => (
+                          <span key={index} className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full font-medium">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="mt-4 text-sm text-foreground/80">{analysis.analysis}</p>
+                </div>
+              )}
+            </div>
+
+            {/* AI Roadmap */}
             <div className="mb-8 rounded-3xl border border-glass/40 bg-gradient-to-r from-violet-500/10 via-sky-500/10 to-emerald-500/10 p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
