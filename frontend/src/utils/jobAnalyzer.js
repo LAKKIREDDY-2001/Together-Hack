@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const normalize = (value = '') => value.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 const jobTitlePatterns = [
@@ -12,9 +13,11 @@ const jobTitlePatterns = [
 ];
 
 const skillKeywords = [
-  'react', 'angular', 'vue', 'javascript', 'typescript', 'node', 'express', 'python', 'django', 'flask', 'sql', 'mongodb', 'postgres', 
-  'docker', 'kubernetes', 'aws', 'azure', 'gcp', 'devops', 'ci/cd', 'jenkins', 'terraform', 'ansible',
-  'leadership', 'management', 'communication', 'agile', 'scrum', 'kanban', 'negotiation', 'stakeholder', 'analytics'
+  'generative ai', 'llm', 'prompt engineering', 'rag', 'fine-tuning', 'instruct tuning', 'peft', 'rlhf',
+  'amazon q', 'llamaindex', 'langchain', 'vector databases', 'amazon bedrock', 'aws ai', 'aws ai/ml', 'code generation', 'refactoring',
+  'automated testing', 'software development', 'cloud computing', 'scalable applications', 'public speaking', 'technical content',
+  'developer relations', 'developer communities', 'github', 'stack overflow', 'react', 'javascript', 'typescript', 'node', 'python', 'sql', 'docker', 'kubernetes',
+  'aws', 'leadership', 'communication', 'mentoring', 'roadmap', 'agile', 'scrum'
 ];
 
 export const extractJobTitle = (jobDesc) => {
@@ -35,7 +38,7 @@ export const extractJobTitle = (jobDesc) => {
 export const extractSkillsFromJob = (jobDesc) => {
   const normalizedDesc = jobDesc.toLowerCase();
   const extracted = skillKeywords.filter(keyword => normalizedDesc.includes(keyword));
-  return [...new Set(extracted)].slice(0, 8); // dedupe, limit
+  return [...new Set(extracted.map(s => s.charAt(0).toUpperCase() + s.slice(1).replace(/ /g, ' ')))];
 };
 
 export const analyzeJobDescription = (jobDesc) => {

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
@@ -34,7 +34,7 @@ function App() {
 
   return (
     <ThemeContext.Provider value={{ darkMode, toggleDarkMode }}>
-      <Router>
+<Router>
         <div className="min-h-screen bg-gradient-to-br from-background to-primary/10">
           <Navbar />
           <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

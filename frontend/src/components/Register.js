@@ -2,17 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authApi } from '../utils/api';
-import { Mail, Lock, User, Eye, EyeOff, Briefcase, Building2, Target, Rocket } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    role: 'employee',
-    department: 'engineering',
-    targetJob: '',
-    targetSkill: ''
+    password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -113,77 +109,7 @@ const Register = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Role</label>
-            <div className="relative">
-              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-glass/50 bg-glass/50 backdrop-blur-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              >
-                <option value="employee">Employee</option>
-                <option value="manager">Manager</option>
-              </select>
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Department</label>
-            <div className="relative">
-              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
-              <select
-                name="department"
-                value={formData.department}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-glass/50 bg-glass/50 backdrop-blur-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              >
-                <option value="engineering">Engineering</option>
-                <option value="hr">HR</option>
-                <option value="sales">Sales</option>
-                <option value="operations">Operations</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Target Skill</label>
-            <div className="relative">
-              <Target className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
-              <input
-                type="text"
-                name="targetSkill"
-                value={formData.targetSkill}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-glass/50 bg-glass/50 backdrop-blur-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                placeholder="Example: React, Leadership, Python"
-                required
-              />
-            </div>
-            <p className="mt-2 text-xs text-foreground/60">
-              We’ll use this to build your personalized learning roadmap.
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Target Job</label>
-            <div className="relative">
-              <Rocket className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/50" />
-              <input
-                type="text"
-                name="targetJob"
-                value={formData.targetJob}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-glass/50 bg-glass/50 backdrop-blur-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                placeholder="Example: Frontend Developer, HR Manager"
-                required
-              />
-            </div>
-            <p className="mt-2 text-xs text-foreground/60">
-              We’ll build clickable roadmap options around this job goal.
-            </p>
-          </div>
           
           <button
             type="submit"

@@ -9,14 +9,14 @@ const User = require('../models/User');
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, department, targetSkill, targetJob } = req.body;
+    const { name, email, password } = req.body;
 
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    user = new User({ name, email, password, role, department, targetSkill, targetJob });
+user = new User({ name, email, password });
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
@@ -33,15 +33,14 @@ router.post('/register', async (req, res) => {
         if (err) throw err;
         res.json({
           token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            department: user.department || '',
-            targetJob: user.targetJob || '',
-            targetSkill: user.targetSkill || ''
-          }
+            user: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              role: user.role || 'employee',
+              department: user.department || ''
+            }
+
         });
       }
     );
@@ -83,9 +82,7 @@ router.post('/login', async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
-            department: user.department || '',
-            targetJob: user.targetJob || '',
-            targetSkill: user.targetSkill || ''
+            department: user.department || ''
           }
         });
       }

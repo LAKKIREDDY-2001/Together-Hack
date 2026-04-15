@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "./static/css/main.aded5056.css",
-    "main.js": "./static/js/main.fda6904e.js",
-    "static/js/453.64aababc.chunk.js": "./static/js/453.64aababc.chunk.js",
-    "index.html": "./index.html",
-    "main.aded5056.css.map": "./static/css/main.aded5056.css.map",
-    "main.fda6904e.js.map": "./static/js/main.fda6904e.js.map",
-    "453.64aababc.chunk.js.map": "./static/js/453.64aababc.chunk.js.map"
+    "main.css": "/skill-passport/static/css/main.cdab84e9.css",
+    "main.js": "/skill-passport/static/js/main.1326b6a6.js",
+    "static/js/453.64aababc.chunk.js": "/skill-passport/static/js/453.64aababc.chunk.js",
+    "index.html": "/skill-passport/index.html",
+    "main.cdab84e9.css.map": "/skill-passport/static/css/main.cdab84e9.css.map",
+    "main.1326b6a6.js.map": "/skill-passport/static/js/main.1326b6a6.js.map",
+    "453.64aababc.chunk.js.map": "/skill-passport/static/js/453.64aababc.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.aded5056.css",
-    "static/js/main.fda6904e.js"
+    "static/css/main.cdab84e9.css",
+    "static/js/main.1326b6a6.js"
   ]
 }

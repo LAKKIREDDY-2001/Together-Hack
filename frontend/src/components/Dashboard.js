@@ -14,6 +14,7 @@ import RoadmapCoachModal from './RoadmapCoachModal';
 import { skillsApi } from '../utils/api';
 import { buildJobTracks, filterCredentialsForTrack, filterSkillsForTrack, getTrackProgress } from '../utils/jobTracks';
 import { analyzeJobDescription, updateUserWithAnalysis } from '../utils/jobAnalyzer';
+import { generateAIPersonalizedRoadmap } from '../utils/aiRoadmapGenerator';
 
 const Dashboard = () => {
   const { skills, credentials, loading } = useDashboardData();
@@ -31,16 +32,20 @@ const Dashboard = () => {
   const [analysis, setAnalysis] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+  // eslint-disable-next-line no-unused-vars
   const fallbackRecommendations = getRoleRecommendations(currentUser);
-  const jobTracks = buildJobTracks(currentUser, fallbackRecommendations);
+  const jobTracks = useMemo(() => {
+    const tracks = buildJobTracks(currentUser);
+    return Array.isArray(tracks) ? tracks : [];
+  }, [currentUser]);
 
-  const handleAnalyzeJob = async () => {
+const handleAnalyzeJob = async () => {
     if (!jobDescription.trim()) return;
     setAnalyzing(true);
     try {
       const result = analyzeJobDescription(jobDescription);
       setAnalysis(result);
-      toast.success(`AI analyzed ${result.skillCount} skills!`);
+      toast.success(`AI analyzed ${result.skillCount} skills: ${result.targetSkills.slice(0,3).join(', ')}...`);
     } catch (error) {
       toast.error('Analysis failed');
     } finally {
@@ -48,17 +53,21 @@ const Dashboard = () => {
     }
   };
 
-  const handleUpdateRoadmap = () => {
+const handleUpdateRoadmap = () => {
     if (!analysis) return;
     const updatedUser = updateUserWithAnalysis(analysis);
     if (updatedUser) {
-      toast.success('Roadmap updated! 🎯');
+      const personalizedRoadmap = generateAIPersonalizedRoadmap(analysis.targetSkills, analysis.targetJob);
+      updatedUser.personalizedRoadmap = personalizedRoadmap;
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      toast.success('AI roadmap with per-skill plans created! Click roadmap tabs below.');
+      // Reload tracks
       window.location.reload();
     } else {
       toast.error('Could not update user data');
     }
   };
-  const activeTrack = jobTracks.find((track) => track.id === activeTrackId) || jobTracks[0];
+  const activeTrack = jobTracks.find((track) => track.id === activeTrackId) || jobTracks[0] || null;
   const recommendationProgress = activeTrack
     ? getTrackProgress(localSkills, activeTrack)
     : { items: [], earnedPoints: 0, totalPoints: 0, remainingPoints: 0 };
@@ -112,12 +121,12 @@ const Dashboard = () => {
   };
 
   const scopedSkills = useMemo(
-    () => (activeTrack ? filterSkillsForTrack(localSkills, activeTrack) : localSkills),
+    () => (activeTrack ? filterSkillsForTrack(localSkills, activeTrack) : Array.isArray(localSkills) ? localSkills : []),
     [activeTrack, localSkills]
   );
 
   const scopedCredentials = useMemo(
-    () => (activeTrack ? filterCredentialsForTrack(credentials, activeTrack) : credentials),
+    () => (activeTrack ? filterCredentialsForTrack(credentials, activeTrack) : Array.isArray(credentials) ? credentials : []),
     [activeTrack, credentials]
   );
 
@@ -149,6 +158,10 @@ const Dashboard = () => {
     if (!skill.lastUpdated) return false;
     return Date.now() - new Date(skill.lastUpdated).getTime() <= 7 * 24 * 60 * 60 * 1000;
   }).length;
+  const passportStrength = localSkills.length ? Math.min(100, Math.round((verifiedSkills / localSkills.length) * 70 + totalScore * 0.3)) : 0;
+  const careerMomentum = Math.min(100, Math.round((newThisWeek * 20) + ((recommendationProgress.earnedPoints / Math.max(recommendationProgress.totalPoints, 1)) * 40) + (scopedCredentials.length * 8)));
+  const trustIndex = Math.min(100, Math.round((scopedCredentials.length * 18) + (verifiedSkills * 10)));
+  const nextMilestone = recommendationProgress.items.find((item) => !item.completed);
 
   if (loading) {
     return (
@@ -177,7 +190,7 @@ const Dashboard = () => {
                   key={tab}
                   className={`px-3 py-2 flex-1 text-xs sm:text-sm font-medium transition-all ${
                     activeTab === tab
-                      ? 'bg-primary text-primary-fg shadow-lg rounded-lg mx-0.5 shadow-xl'
+                      ? 'bg-primary text-primary-fg rounded-lg mx-0.5 shadow-xl'
                       : 'text-foreground/70 hover:text-foreground hover:bg-glass/50'
                   }`}
                   onClick={() => setActiveTab(tab)}
@@ -234,6 +247,65 @@ const Dashboard = () => {
             <TrendingUp className="h-12 w-12 text-purple-500 mx-auto mb-4 group-hover:scale-110 transition-transform" />
             <h3 className="text-xl font-bold mb-2">+{newThisWeek} this week</h3>
             <p className="text-foreground/60 text-sm">New skills</p>
+          </div>
+        </div>
+
+        <div className="mb-12 grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
+          <div className="rounded-3xl border border-glass/40 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 text-white shadow-2xl">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-300">Passport Integrity</p>
+                <h2 className="mt-2 text-2xl font-bold">Verified Credential Identity</h2>
+              </div>
+              <div className="rounded-2xl bg-white/10 px-4 py-3 text-right backdrop-blur">
+                <div className="text-xs text-slate-300">Trust Index</div>
+                <div className="text-2xl font-bold text-emerald-300">{trustIndex}%</div>
+              </div>
+            </div>
+            <p className="max-w-2xl text-sm text-slate-300">
+              Your Skill Passport combines project proof, verification evidence, and roadmap progress into a tamper-resistant career story.
+            </p>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl bg-white/10 p-4">
+                <div className="text-xs uppercase tracking-wide text-slate-300">Passport Strength</div>
+                <div className="mt-2 text-3xl font-bold">{passportStrength}%</div>
+                <div className="mt-1 text-sm text-slate-300">Based on verification and average skill score</div>
+              </div>
+              <div className="rounded-2xl bg-white/10 p-4">
+                <div className="text-xs uppercase tracking-wide text-slate-300">Career Momentum</div>
+                <div className="mt-2 text-3xl font-bold">{careerMomentum}%</div>
+                <div className="mt-1 text-sm text-slate-300">Measures recent additions and roadmap completion</div>
+              </div>
+              <div className="rounded-2xl bg-white/10 p-4">
+                <div className="text-xs uppercase tracking-wide text-slate-300">Evidence Vault</div>
+                <div className="mt-2 text-3xl font-bold">{scopedCredentials.length}</div>
+                <div className="mt-1 text-sm text-slate-300">Verified artifacts linked to this role path</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-white/80 to-primary/10 p-6 shadow-xl dark:from-slate-900/80 dark:to-primary/10">
+            <div className="mb-4 flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-bold">Opportunity Snapshot</h2>
+            </div>
+            <div className="space-y-4 text-sm">
+              <div className="rounded-2xl bg-white/70 p-4 dark:bg-slate-950/40">
+                <div className="text-foreground/60">Active Track</div>
+                <div className="mt-1 text-lg font-semibold">{activeTrack?.jobName || 'No track selected'}</div>
+              </div>
+              <div className="rounded-2xl bg-white/70 p-4 dark:bg-slate-950/40">
+                <div className="text-foreground/60">Next Milestone</div>
+                <div className="mt-1 font-semibold">{nextMilestone?.name || 'All recommended skills completed'}</div>
+                <div className="mt-1 text-foreground/70">{nextMilestone?.reason || 'Your current track is fully covered by your passport.'}</div>
+              </div>
+              <div className="rounded-2xl bg-white/70 p-4 dark:bg-slate-950/40">
+                <div className="text-foreground/60">Unique Edge</div>
+                <div className="mt-1 text-foreground/80">
+                  This dashboard doesn&apos;t just list skills. It maps proof, trust, and role readiness together so judges can see verified growth, not generic profile data.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -324,6 +396,7 @@ const Dashboard = () => {
                 </div>
                 <button
                   onClick={() => setShowRoadmapCoach(true)}
+                  disabled={!aiRoadmap}
                   className="btn-primary inline-flex items-center gap-2 px-5 py-3 text-sm"
                 >
                   <Sparkles className="h-4 w-4" />

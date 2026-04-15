@@ -2,6 +2,12 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const appBasePath = process.env.PUBLIC_URL || '/skill-passport';
+
+const redirectToLogin = () => {
+  const loginPath = `${appBasePath.replace(/\/$/, '')}/#/login`;
+  window.location.href = loginPath;
+};
 
 const api = axios.create({
   baseURL: apiBaseUrl,
@@ -16,6 +22,7 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      config.headers['x-auth-token'] = token;
     }
     return config;
   },
@@ -31,7 +38,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       toast.error('Session expired. Please login again.');
-      window.location.href = '/login';
+      redirectToLogin();
     } else if (error.response?.status >= 400) {
       toast.error(error.response?.data?.message || 'Something went wrong');
     }

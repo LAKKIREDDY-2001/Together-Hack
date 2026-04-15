@@ -1,359 +1,287 @@
 const normalize = (value = '') => value.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-const keywordProfiles = [
+const skillAliases = {
+  react: ['react', 'reactjs', 'react.js'],
+  javascript: ['javascript', 'js', 'ecmascript'],
+  typescript: ['typescript', 'ts'],
+  nodejs: ['node', 'nodejs', 'node.js'],
+  generativeai: ['generative ai', 'gen ai', 'genai'],
+  llm: ['llm', 'llms', 'large language model', 'large language models'],
+  promptengineering: ['prompt engineering', 'prompt design'],
+  rag: ['rag', 'retrieval augmented generation'],
+  awsbedrock: ['aws bedrock', 'amazon bedrock', 'bedrock'],
+  amazonq: ['amazon q', 'amazon q developer'],
+  vectordatabases: ['vector databases', 'vector database', 'embeddings', 'vector search'],
+  cloudcomputing: ['cloud', 'cloud computing', 'aws', 'azure', 'gcp'],
+  leadership: ['leadership', 'mentoring', 'team leadership'],
+  communication: ['communication', 'stakeholder communication', 'presentation'],
+  sql: ['sql', 'postgresql', 'mysql', 'database'],
+  python: ['python'],
+  docker: ['docker', 'containers'],
+  kubernetes: ['kubernetes', 'k8s'],
+  github: ['github', 'git']
+};
+
+const levelForPoints = (points) => {
+  if (points >= 35) return 'Advanced';
+  if (points >= 25) return 'Intermediate';
+  return 'Beginner';
+};
+
+const createSkill = (name, category, points, reason) => ({
+  name,
+  category,
+  points,
+  level: levelForPoints(points),
+  reason
+});
+
+const trackCatalog = [
   {
-    keywords: ['frontend', 'ui', 'web', 'react'],
-    categories: ['Frontend', 'Design'],
+    name: 'AI Solutions Engineer',
+    categories: ['AI', 'Applied ML', 'Product Engineering'],
+    keywords: ['ai', 'genai', 'llm', 'prompt', 'rag', 'bedrock', 'amazon q'],
+    summary: 'Build verified proof that you can ship trustworthy AI features, not just experiment with them.',
+    whyItMatters: 'This path emphasizes production-ready AI delivery, evaluation, and evidence-backed implementation.',
     skills: [
-      { name: 'React', level: 'Advanced', category: 'Frontend', points: 35, reason: 'Core skill for building modern frontend applications.' },
-      { name: 'JavaScript', level: 'Advanced', category: 'Frontend', points: 30, reason: 'Essential for writing strong frontend logic and interactivity.' },
-      { name: 'UI Architecture', level: 'Intermediate', category: 'Frontend', points: 25, reason: 'Helps structure scalable and reusable interfaces.' }
+      createSkill('Generative AI', 'AI', 35, 'Core foundation for building intelligent products'),
+      createSkill('LLM', 'AI', 30, 'Understand model behavior, prompting, and capability boundaries'),
+      createSkill('Prompt Engineering', 'AI', 25, 'Improve output quality and reliability'),
+      createSkill('RAG', 'AI', 35, 'Connect enterprise knowledge with model responses'),
+      createSkill('LangChain', 'AI Tooling', 25, 'Orchestrate multi-step AI workflows'),
+      createSkill('AWS Bedrock', 'Cloud AI', 30, 'Deploy managed foundation model solutions'),
+      createSkill('Amazon Q', 'Developer Tools', 20, 'Use AI-assisted developer workflows'),
+      createSkill('Evaluation Metrics', 'AI Quality', 20, 'Measure correctness, safety, and usefulness')
+    ],
+    stages: [
+      { step: 1, title: 'Foundation', duration: 'Weeks 1-2', focus: 'Understand LLMs, prompting, and AI product constraints' },
+      { step: 2, title: 'Build', duration: 'Weeks 3-5', focus: 'Create RAG pipelines, copilots, or internal assistants' },
+      { step: 3, title: 'Verify', duration: 'Weeks 6-8', focus: 'Collect evidence, scores, and trust signals in your passport' }
     ]
   },
   {
-    keywords: ['backend', 'api', 'server', 'node'],
-    categories: ['Backend', 'DevOps'],
+    name: 'Full Stack Product Engineer',
+    categories: ['Frontend', 'Backend', 'Delivery'],
+    keywords: ['react', 'frontend', 'full stack', 'node', 'javascript', 'typescript'],
+    summary: 'Show end-to-end delivery strength across UI, APIs, data, and deployment.',
+    whyItMatters: 'Hiring teams want proof that you can own features from concept through production.',
     skills: [
-      { name: 'Node.js', level: 'Advanced', category: 'Backend', points: 35, reason: 'Important for APIs, services, and backend systems.' },
-      { name: 'Database Design', level: 'Intermediate', category: 'Backend', points: 30, reason: 'Supports better data structure and performance.' },
-      { name: 'API Security', level: 'Intermediate', category: 'Backend', points: 25, reason: 'Protects backend services and user data.' }
+      createSkill('React', 'Frontend', 30, 'Ship interactive user experiences'),
+      createSkill('JavaScript', 'Frontend', 20, 'Core language fluency for web engineering'),
+      createSkill('TypeScript', 'Frontend', 25, 'Improve reliability and maintainability'),
+      createSkill('Node.js', 'Backend', 30, 'Build APIs and application services'),
+      createSkill('SQL', 'Data', 20, 'Model and query application data'),
+      createSkill('Docker', 'DevOps', 20, 'Package and run apps consistently'),
+      createSkill('GitHub', 'Collaboration', 15, 'Track work, reviews, and proof of contribution'),
+      createSkill('Cloud Computing', 'Infrastructure', 25, 'Deploy and monitor production services')
+    ],
+    stages: [
+      { step: 1, title: 'Core Stack', duration: 'Weeks 1-2', focus: 'Strengthen frontend and backend fundamentals' },
+      { step: 2, title: 'Delivery', duration: 'Weeks 3-5', focus: 'Build full features with persistence and deployment' },
+      { step: 3, title: 'Proof', duration: 'Weeks 6-7', focus: 'Add projects, credentials, and outcome metrics' }
     ]
   },
   {
-    keywords: ['devops', 'cloud', 'sre', 'platform'],
-    categories: ['DevOps', 'Backend'],
+    name: 'Cloud Platform Engineer',
+    categories: ['Infrastructure', 'Automation', 'Reliability'],
+    keywords: ['cloud', 'aws', 'docker', 'kubernetes', 'devops', 'platform'],
+    summary: 'Turn infrastructure knowledge into verified, portable engineering proof.',
+    whyItMatters: 'Infrastructure roles reward operational maturity, automation, and measurable service reliability.',
     skills: [
-      { name: 'CI/CD', level: 'Advanced', category: 'DevOps', points: 35, reason: 'Makes delivery faster and more reliable.' },
-      { name: 'Cloud Infrastructure', level: 'Advanced', category: 'DevOps', points: 35, reason: 'Important for scaling and deployment confidence.' },
-      { name: 'Monitoring', level: 'Intermediate', category: 'DevOps', points: 20, reason: 'Improves visibility into systems and incidents.' }
+      createSkill('Cloud Computing', 'Infrastructure', 30, 'Design deployable and scalable systems'),
+      createSkill('AWS', 'Infrastructure', 25, 'Use managed cloud services effectively'),
+      createSkill('Docker', 'Containers', 25, 'Package workloads for consistent delivery'),
+      createSkill('Kubernetes', 'Containers', 35, 'Operate orchestrated workloads at scale'),
+      createSkill('Node.js', 'Automation', 15, 'Support scripts and platform services'),
+      createSkill('Python', 'Automation', 20, 'Automate ops and infrastructure tasks'),
+      createSkill('SQL', 'Data', 10, 'Understand persistence and operational data'),
+      createSkill('Communication', 'Collaboration', 10, 'Coordinate incident response and cross-team delivery')
+    ],
+    stages: [
+      { step: 1, title: 'Infrastructure Basics', duration: 'Weeks 1-2', focus: 'Cloud, containers, and deployment fundamentals' },
+      { step: 2, title: 'Automation', duration: 'Weeks 3-4', focus: 'Script workflows and standardize delivery' },
+      { step: 3, title: 'Reliability Proof', duration: 'Weeks 5-6', focus: 'Document uptime, recovery, and delivery evidence' }
     ]
   },
   {
-    keywords: ['data', 'analytics', 'analyst', 'bi'],
-    categories: ['Data', 'General'],
+    name: 'Engineering Leader',
+    categories: ['Leadership', 'Execution', 'Communication'],
+    keywords: ['manager', 'lead', 'leadership', 'mentoring', 'team'],
+    summary: 'Capture both technical depth and people leadership in one verified career record.',
+    whyItMatters: 'Leadership roles need evidence of delivery, mentoring, and strategic clarity.',
     skills: [
-      { name: 'SQL', level: 'Advanced', category: 'Data', points: 30, reason: 'Critical for querying and analyzing business data.' },
-      { name: 'Analytics', level: 'Intermediate', category: 'Data', points: 25, reason: 'Helps turn data into useful decisions.' },
-      { name: 'Documentation', level: 'Intermediate', category: 'General', points: 15, reason: 'Keeps findings clear and reusable.' }
-    ]
-  },
-  {
-    keywords: ['python', 'ml', 'ai', 'machinelearning'],
-    categories: ['AI/ML', 'Data'],
-    skills: [
-      { name: 'Python', level: 'Advanced', category: 'AI/ML', points: 35, reason: 'Core language for automation, AI, and data workflows.' },
-      { name: 'Data Pipelines', level: 'Intermediate', category: 'Data', points: 25, reason: 'Useful for moving and preparing data reliably.' },
-      { name: 'Model Evaluation', level: 'Intermediate', category: 'AI/ML', points: 25, reason: 'Helps measure and improve AI system quality.' }
-    ]
-  },
-  {
-    keywords: ['manager', 'lead', 'leadership', 'product'],
-    categories: ['Management', 'Data'],
-    skills: [
-      { name: 'Roadmapping', level: 'Advanced', category: 'Management', points: 30, reason: 'Helps define direction and align work.' },
-      { name: 'Stakeholder Communication', level: 'Advanced', category: 'Management', points: 25, reason: 'Improves clarity and alignment across teams.' },
-      { name: 'Analytics', level: 'Intermediate', category: 'Data', points: 20, reason: 'Supports prioritization with evidence.' }
-    ]
-  },
-  {
-    keywords: ['hr', 'recruit', 'talent', 'people'],
-    categories: ['Management', 'General'],
-    skills: [
-      { name: 'Candidate Screening', level: 'Advanced', category: 'Management', points: 25, reason: 'Improves hiring consistency and speed.' },
-      { name: 'Conflict Resolution', level: 'Advanced', category: 'Management', points: 30, reason: 'Builds healthier team outcomes.' },
-      { name: 'Employee Engagement', level: 'Advanced', category: 'Management', points: 25, reason: 'Improves culture and retention.' }
-    ]
-  },
-  {
-    keywords: ['sales', 'account', 'businessdevelopment'],
-    categories: ['Management', 'General'],
-    skills: [
-      { name: 'Negotiation', level: 'Advanced', category: 'Management', points: 35, reason: 'Improves deals, outcomes, and stakeholder trust.' },
-      { name: 'CRM', level: 'Intermediate', category: 'General', points: 20, reason: 'Keeps customer information actionable.' },
-      { name: 'Prospecting', level: 'Intermediate', category: 'General', points: 25, reason: 'Builds a stronger pipeline of opportunities.' }
+      createSkill('Leadership', 'Leadership', 35, 'Guide direction, priorities, and execution'),
+      createSkill('Communication', 'Leadership', 25, 'Align teams and stakeholders'),
+      createSkill('Roadmap Planning', 'Execution', 25, 'Translate strategy into milestones'),
+      createSkill('Agile Delivery', 'Execution', 20, 'Run healthy, iterative execution'),
+      createSkill('Mentoring', 'People Growth', 25, 'Grow other engineers effectively'),
+      createSkill('GitHub', 'Delivery Signals', 10, 'Review, coach, and coordinate work visibly')
+    ],
+    stages: [
+      { step: 1, title: 'Lead Self', duration: 'Weeks 1-2', focus: 'Clarify priorities and communication rituals' },
+      { step: 2, title: 'Lead Delivery', duration: 'Weeks 3-4', focus: 'Improve execution, predictability, and review quality' },
+      { step: 3, title: 'Lead Others', duration: 'Weeks 5-6', focus: 'Mentor teammates and capture coaching evidence' }
     ]
   }
 ];
 
-const departmentTracks = {
-  engineering: [
-    {
-      name: 'Frontend Developer',
-      categories: ['Frontend', 'Design'],
-      skills: [
-        { name: 'React', level: 'Advanced', category: 'Frontend', points: 35, reason: 'Build polished user interfaces and reusable components.' },
-        { name: 'JavaScript', level: 'Advanced', category: 'Frontend', points: 30, reason: 'Strengthens debugging, performance, and architecture decisions.' },
-        { name: 'UI Architecture', level: 'Intermediate', category: 'Frontend', points: 25, reason: 'Improves scalability and clarity across screens.' }
-      ]
-    },
-    {
-      name: 'Backend Developer',
-      categories: ['Backend', 'DevOps'],
-      skills: [
-        { name: 'Node.js', level: 'Advanced', category: 'Backend', points: 35, reason: 'Important for APIs, services, and full-stack systems.' },
-        { name: 'Database Design', level: 'Intermediate', category: 'Backend', points: 30, reason: 'Supports data quality, performance, and maintainability.' },
-        { name: 'API Security', level: 'Intermediate', category: 'Backend', points: 25, reason: 'Helps protect services and production systems.' }
-      ]
-    },
-    {
-      name: 'DevOps Engineer',
-      categories: ['DevOps', 'Backend'],
-      skills: [
-        { name: 'CI/CD', level: 'Advanced', category: 'DevOps', points: 35, reason: 'Makes releases faster, safer, and more reliable.' },
-        { name: 'Cloud Infrastructure', level: 'Advanced', category: 'DevOps', points: 35, reason: 'Builds confidence in deployment and scaling.' },
-        { name: 'Monitoring', level: 'Intermediate', category: 'DevOps', points: 20, reason: 'Gives visibility into incidents and system health.' }
-      ]
-    },
-    {
-      name: 'Data Engineer',
-      categories: ['Data', 'Backend', 'AI/ML'],
-      skills: [
-        { name: 'Python', level: 'Advanced', category: 'AI/ML', points: 35, reason: 'Useful for automation, pipelines, and data work.' },
-        { name: 'SQL', level: 'Advanced', category: 'Data', points: 25, reason: 'Critical for analytics, reporting, and data optimization.' },
-        { name: 'ETL Pipelines', level: 'Intermediate', category: 'Data', points: 30, reason: 'Improves dependable movement of business data.' }
-      ]
-    }
-  ],
-  hr: [
-    {
-      name: 'HR Manager',
-      categories: ['Management'],
-      skills: [
-        { name: 'Employee Engagement', level: 'Advanced', category: 'Management', points: 25, reason: 'Improves retention, morale, and culture.' },
-        { name: 'Conflict Resolution', level: 'Advanced', category: 'Management', points: 30, reason: 'Builds healthier teams and trust.' },
-        { name: 'Policy Communication', level: 'Intermediate', category: 'Management', points: 20, reason: 'Creates clarity across the organization.' }
-      ]
-    },
-    {
-      name: 'Talent Acquisition Specialist',
-      categories: ['Management', 'General'],
-      skills: [
-        { name: 'Candidate Screening', level: 'Advanced', category: 'Management', points: 25, reason: 'Improves hiring consistency and quality.' },
-        { name: 'Interview Design', level: 'Intermediate', category: 'Management', points: 20, reason: 'Creates better evaluation systems.' },
-        { name: 'Employer Branding', level: 'Intermediate', category: 'General', points: 20, reason: 'Attracts stronger candidates and trust.' }
-      ]
-    }
-  ],
-  sales: [
-    {
-      name: 'Sales Executive',
-      categories: ['Management', 'General'],
-      skills: [
-        { name: 'Negotiation', level: 'Advanced', category: 'Management', points: 35, reason: 'Improves win rate and deal quality.' },
-        { name: 'CRM', level: 'Intermediate', category: 'General', points: 20, reason: 'Keeps customer data organized and actionable.' },
-        { name: 'Prospecting', level: 'Intermediate', category: 'General', points: 25, reason: 'Builds a stronger opportunity pipeline.' }
-      ]
-    },
-    {
-      name: 'Account Manager',
-      categories: ['Management', 'General', 'Data'],
-      skills: [
-        { name: 'Client Retention', level: 'Advanced', category: 'Management', points: 30, reason: 'Strengthens long-term revenue and trust.' },
-        { name: 'Relationship Management', level: 'Advanced', category: 'Management', points: 25, reason: 'Creates better customer outcomes.' },
-        { name: 'Analytics', level: 'Intermediate', category: 'Data', points: 20, reason: 'Supports smarter account decisions.' }
-      ]
-    }
-  ]
+const getAliases = (value = '') => {
+  const key = normalize(value);
+  const aliases = skillAliases[key] || [];
+  return [value, ...aliases].map(normalize).filter(Boolean);
 };
 
-const fallbackTracks = [
-  {
-    name: 'Product Manager',
-    categories: ['Management', 'Data'],
-    skills: [
-      { name: 'Roadmapping', level: 'Advanced', category: 'Management', points: 30, reason: 'Helps define direction and ship outcomes clearly.' },
-      { name: 'Stakeholder Communication', level: 'Advanced', category: 'Management', points: 25, reason: 'Builds alignment across teams.' },
-      { name: 'Analytics', level: 'Intermediate', category: 'Data', points: 20, reason: 'Supports prioritization with evidence.' }
-    ]
-  },
-  {
-    name: 'Business Analyst',
-    categories: ['Data', 'General'],
-    skills: [
-      { name: 'SQL', level: 'Intermediate', category: 'Data', points: 25, reason: 'Unlocks deeper analysis and reporting.' },
-      { name: 'Requirements Gathering', level: 'Advanced', category: 'General', points: 20, reason: 'Improves clarity before execution.' },
-      { name: 'Documentation', level: 'Intermediate', category: 'General', points: 15, reason: 'Creates clear reusable knowledge.' }
-    ]
-  }
-];
+const skillMatches = (source = '', target = '') => {
+  const sourceAliases = getAliases(source);
+  const targetAliases = getAliases(target);
 
-const roleStages = {
-  employee: [
-    'Learn the foundations and tools used in this job.',
-    'Practice with smaller tasks that build confidence and proof.',
-    'Turn the learning into visible outcomes on real work.'
-  ],
-  manager: [
-    'Understand how this job track creates business value.',
-    'Apply the capabilities in team reviews, planning, and delivery.',
-    'Scale the learning into repeatable coaching and team systems.'
-  ]
+  return sourceAliases.some((sourceAlias) =>
+    targetAliases.some(
+      (targetAlias) =>
+        sourceAlias === targetAlias ||
+        sourceAlias.includes(targetAlias) ||
+        targetAlias.includes(sourceAlias)
+    )
+  );
 };
 
-const scoreTrackMatch = (track, targetJob) => {
+const keywordScore = (track, targetJob) => {
   const normalizedJob = normalize(targetJob);
   if (!normalizedJob) return 0;
 
-  let score = 0;
-
-  if (normalizedJob.includes(normalize(track.name))) {
-    score += 12;
-  }
-
-  track.skills.forEach((skill) => {
-    const skillName = normalize(skill.name);
-    if (normalizedJob.includes(skillName) || skillName.includes(normalizedJob)) {
-      score += 4;
-    }
-  });
-
-  track.categories.forEach((category) => {
-    const categoryName = normalize(category);
-    if (normalizedJob.includes(categoryName) || categoryName.includes(normalizedJob)) {
-      score += 5;
-    }
-  });
-
-  return score;
+  return track.keywords.reduce((score, keyword) => {
+    const normalizedKeyword = normalize(keyword);
+    return normalizedJob.includes(normalizedKeyword) ? score + 4 : score;
+  }, 0);
 };
 
-const getProfileFromTargetJob = (targetJob, departmentTracksForUser) => {
-  const normalizedJob = normalize(targetJob);
-  if (!normalizedJob) return null;
+const createSlidesForTrack = (track, totalPoints) => [
+  {
+    title: `${track.name} Roadmap`,
+    body: `${track.summary} Focus first on ${track.skills.slice(0, 4).map((item) => item.name).join(', ')}.`,
+    accent: 'from-sky-500 to-blue-500'
+  },
+  {
+    title: 'Proof Strategy',
+    body: 'Add projects, evidence, and verification so each skill becomes a trusted credential instead of just a claim.',
+    accent: 'from-emerald-500 to-teal-500'
+  },
+  {
+    title: 'Career Outcome',
+    body: `Completing this track can unlock about ${totalPoints} verified points across your passport.`,
+    accent: 'from-violet-500 to-fuchsia-500'
+  }
+];
 
-  let bestProfile = null;
-  let bestScore = 0;
+const createTrackFromCatalog = (track, index) => {
+  const totalPoints = track.skills.reduce((sum, item) => sum + item.points, 0);
 
-  keywordProfiles.forEach((profile) => {
-    const score = profile.keywords.reduce((sum, keyword) => {
-      const normalizedKeyword = normalize(keyword);
-      return normalizedJob.includes(normalizedKeyword) ? sum + 5 : sum;
-    }, 0);
+  return {
+    id: `${normalize(track.name)}-${index}`,
+    jobName: track.name,
+    categories: track.categories || [],
+    recommendedSkills: track.skills || [],
+    totalPoints,
+    summary: track.summary,
+    whyItMatters: track.whyItMatters,
+    stages: track.stages || [],
+    slides: createSlidesForTrack(track, totalPoints)
+  };
+};
 
-    if (score > bestScore) {
-      bestScore = score;
-      bestProfile = profile;
-    }
+const createTrackFromPersonalizedRoadmap = (personalizedRoadmap, targetJob) => {
+  const stages = Array.isArray(personalizedRoadmap?.stages) ? personalizedRoadmap.stages : [];
+  const recommendedSkills = stages.flatMap((stage) =>
+    (Array.isArray(stage?.topics) ? stage.topics : []).map((topic) =>
+      createSkill(topic, stage.title || 'AI Generated', 25, stage.project || `Planned for ${stage.title || 'roadmap'} stage`)
+    )
+  );
+
+  const dedupedSkills = recommendedSkills.filter((skill, index, list) => {
+    return index === list.findIndex((item) => skillMatches(item.name, skill.name));
   });
 
-  if (bestProfile) {
-    return {
-      name: targetJob,
-      categories: bestProfile.categories,
-      skills: bestProfile.skills
-    };
-  }
+  const totalPoints = dedupedSkills.reduce((sum, item) => sum + item.points, 0);
 
-  const sortedDepartmentTracks = [...departmentTracksForUser]
-    .map((track) => ({ track, score: scoreTrackMatch(track, targetJob) }))
-    .sort((a, b) => b.score - a.score);
-
-  if (sortedDepartmentTracks[0]?.score > 0) {
-    return {
-      name: targetJob,
-      categories: sortedDepartmentTracks[0].track.categories,
-      skills: sortedDepartmentTracks[0].track.skills
-    };
-  }
-
-  return null;
+  return {
+    id: 'ai-personalized-track',
+    jobName: targetJob || personalizedRoadmap?.targetJob || 'AI Personalized Roadmap',
+    categories: ['AI Generated', 'Personalized'],
+    recommendedSkills: dedupedSkills,
+    totalPoints,
+    summary: `Custom roadmap generated from the uploaded job description for ${targetJob || 'your next role'}.`,
+    whyItMatters: 'This personalized track turns job requirements into a step-by-step, evidence-backed learning plan.',
+    stages,
+    slides: Array.isArray(personalizedRoadmap?.slides) ? personalizedRoadmap.slides : []
+  };
 };
 
 export const buildJobTracks = (user) => {
-  const department = (user?.department || '').toLowerCase();
-  const role = (user?.role || 'employee').toLowerCase();
   const targetJob = (user?.targetJob || '').trim();
-  const trackSource = departmentTracks[department] || fallbackTracks;
+  const personalizedRoadmap = user?.personalizedRoadmap;
+  const rankedTracks = trackCatalog
+    .map((track, index) => ({
+      ...createTrackFromCatalog(track, index),
+      matchScore: keywordScore(track, targetJob)
+    }))
+    .sort((a, b) => b.matchScore - a.matchScore);
 
-  const primaryTrack = targetJob ? getProfileFromTargetJob(targetJob, trackSource) : null;
+  const personalizedTrack =
+    personalizedRoadmap && Array.isArray(personalizedRoadmap.stages) && personalizedRoadmap.stages.length
+      ? createTrackFromPersonalizedRoadmap(personalizedRoadmap, targetJob)
+      : null;
 
-  const candidates = [primaryTrack, ...trackSource.filter((track) => normalize(track.name) !== normalize(targetJob))].filter(Boolean).slice(0, 4);
+  const topTracks = rankedTracks.slice(0, 3).map(({ matchScore, ...track }) => track);
 
-  return candidates.map((track, index) => {
-    const totalPoints = track.skills.reduce((sum, item) => sum + item.points, 0);
-
-    return {
-      id: `${normalize(track.name)}-${index}`,
-      jobName: track.name,
-      categories: track.categories,
-      recommendedSkills: track.skills,
-      totalPoints,
-      summary: `${track.name} roadmap for a ${role} in ${department || 'your department'}.`,
-      whyItMatters: `${track.name} can unlock stronger growth, clearer direction, and more visible proof of progress for your career path.`,
-      stages: (roleStages[role] || roleStages.employee).map((focus, stageIndex) => ({
-        step: stageIndex + 1,
-        title: ['Foundation', 'Practice', 'Proof'][stageIndex],
-        duration: `Week ${stageIndex * 2 + 1}-${stageIndex * 2 + 2}`,
-        focus
-      })),
-      slides: [
-        {
-          title: `${track.name} Roadmap`,
-          body: `This roadmap is built around your target job and role so you can learn the right skills with purpose.`,
-          accent: 'from-sky-500 to-cyan-500'
-        },
-        {
-          title: `Skills To Focus On`,
-          body: `A strong ${track.name} should focus on ${track.skills.map((item) => item.name).join(', ')}.`,
-          accent: 'from-emerald-500 to-teal-500'
-        },
-        {
-          title: `What You Can Unlock`,
-          body: `Completing this roadmap can earn about ${totalPoints} points and move your dashboard progress forward in a meaningful way.`,
-          accent: 'from-violet-500 to-fuchsia-500'
-        }
-      ]
-    };
-  });
+  return personalizedTrack ? [personalizedTrack, ...topTracks] : topTracks;
 };
 
-export const getTrackProgress = (skills, track) => {
-  const items = track.recommendedSkills.map((recommendation) => {
-    const matchedSkill = skills.find((skill) => {
-      const skillName = normalize(skill.name || skill.skillName);
-      const recommendationName = normalize(recommendation.name);
-      return skillName === recommendationName || skillName.includes(recommendationName) || recommendationName.includes(skillName);
-    });
+export const getTrackProgress = (skills = [], track) => {
+  const recommendedSkills = Array.isArray(track?.recommendedSkills) ? track.recommendedSkills : [];
 
+  const items = recommendedSkills.map((item) => {
+    const matchedSkill = skills.find((skill) => skillMatches(skill.name, item.name));
     return {
-      ...recommendation,
+      ...item,
       completed: Boolean(matchedSkill),
       matchedSkill
     };
   });
 
-  const earnedPoints = items.filter((item) => item.completed).reduce((sum, item) => sum + item.points, 0);
-  const totalPoints = items.reduce((sum, item) => sum + item.points, 0);
+  const earnedPoints = items.reduce((sum, item) => sum + (item.completed ? item.points || 0 : 0), 0);
+  const totalPoints = items.reduce((sum, item) => sum + (item.points || 0), 0);
 
   return {
     items,
     earnedPoints,
     totalPoints,
-    remainingPoints: totalPoints - earnedPoints
+    remainingPoints: Math.max(totalPoints - earnedPoints, 0)
   };
 };
 
-export const filterSkillsForTrack = (skills, track) =>
-  skills.filter((skill) => {
-    const skillName = normalize(skill.name || skill.skillName);
-    const category = normalize(skill.category || '');
+export const filterSkillsForTrack = (skills = [], track) => {
+  const recommendedSkills = Array.isArray(track?.recommendedSkills) ? track.recommendedSkills : [];
+  const categories = Array.isArray(track?.categories) ? track.categories : [];
 
-    const matchesSkill = track.recommendedSkills.some((recommendation) => {
-      const recommendationName = normalize(recommendation.name);
-      return skillName === recommendationName || skillName.includes(recommendationName) || recommendationName.includes(skillName);
-    });
+  if (!recommendedSkills.length && !categories.length) {
+    return Array.isArray(skills) ? skills : [];
+  }
 
-    const matchesCategory = track.categories.some((item) => normalize(item) === category);
-    return matchesSkill || matchesCategory;
+  return (Array.isArray(skills) ? skills : []).filter((skill) => {
+    const matchesRecommended = recommendedSkills.some((item) => skillMatches(skill.name, item.name));
+    const matchesCategory = categories.some((category) => normalize(skill.category).includes(normalize(category)));
+    return matchesRecommended || matchesCategory;
   });
+};
 
-export const filterCredentialsForTrack = (credentials, track) =>
-  credentials.filter((credential) => {
-    const title = normalize(credential.title || '');
-    const issuer = normalize(credential.issuer || '');
+export const filterCredentialsForTrack = (credentials = [], track) => {
+  const recommendedSkills = Array.isArray(track?.recommendedSkills) ? track.recommendedSkills : [];
+  if (!recommendedSkills.length) {
+    return Array.isArray(credentials) ? credentials : [];
+  }
 
-    return track.recommendedSkills.some((recommendation) => {
-      const recommendationName = normalize(recommendation.name);
-      return title.includes(recommendationName) || issuer.includes(recommendationName);
-    });
+  return (Array.isArray(credentials) ? credentials : []).filter((credential) => {
+    const title = credential?.title || credential?.skillId?.skillName || '';
+    return recommendedSkills.some((item) => skillMatches(title, item.name));
   });
+};
