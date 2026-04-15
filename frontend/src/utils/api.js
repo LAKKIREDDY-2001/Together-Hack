@@ -2,9 +2,17 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
-const appBasePath = process.env.PUBLIC_URL || '/skill-passport';
+
+const resolveAppBasePath = () => {
+  if (process.env.PUBLIC_URL) return process.env.PUBLIC_URL;
+  if (typeof window === 'undefined') return '';
+
+  const segments = window.location.pathname.split('/').filter(Boolean);
+  return segments.length ? `/${segments[0]}` : '';
+};
 
 const redirectToLogin = () => {
+  const appBasePath = resolveAppBasePath();
   const loginPath = `${appBasePath.replace(/\/$/, '')}/#/login`;
   window.location.href = loginPath;
 };
